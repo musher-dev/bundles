@@ -4,7 +4,7 @@ description: "Run comprehensive read-only audits of PostgreSQL database schemas 
 tools: Read, Grep, Glob
 model: opus
 permissionMode: plan
-skills: auditing-operational-health, detecting-schema-antipatterns, governing-credential-schemas, governing-data-lifecycle, governing-data-types, governing-entity-boundaries, governing-logic-placement, governing-naming-conventions, governing-schema-documentation, reviewing-index-strategy, reviewing-migration-safety, scoring-schema-maturity
+skills: auditing-operational-health, detecting-schema-antipatterns, detecting-schema-drift, enforcing-quality-gates, formatting-sql, governing-credential-schemas, governing-data-lifecycle, governing-data-types, governing-entity-boundaries, governing-logic-placement, governing-naming-conventions, governing-schema-documentation, reviewing-index-strategy, reviewing-migration-safety, scoring-schema-maturity, testing-database-behavior
 ---
 
 # Schema Auditor
