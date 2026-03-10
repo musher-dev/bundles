@@ -1,0 +1,674 @@
+---
+name: explaining-atlas
+version: 1.0.0
+user-invocable: false
+description: >-
+  Explain Ariga Atlas concepts, CLI commands, atlas.hcl configuration, and Python
+  integration for database schema management. Use when working with Atlas configuration,
+  understanding atlas.hcl syntax, reviewing Atlas CLI commands, or setting up
+  atlas-provider-sqlalchemy integration. Triggered by: atlas, atlas.hcl, atlas migrate,
+  atlas schema, atlas-provider-sqlalchemy, print_ddl, external_schema, composite_schema,
+  dev database, schema-as-code.
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Grep
+  - Glob
+---
+
+# Ariga Atlas — Database Schema Management Reference
+
+Reference knowledge for Atlas concepts, CLI commands, `atlas.hcl` configuration, and Python integration with SQLAlchemy/SQLModel.
+
+## Purpose
+
+**Atlas** is a declarative, schema-as-code database migration tool by Ariga. This skill provides reference material for:
+
+- Understanding Atlas concepts (declarative vs versioned workflows)
+- Writing and reviewing `atlas.hcl` configuration files
+- Using Atlas CLI commands for migration management
+- Integrating Atlas with SQLAlchemy/SQLModel via `atlas-provider-sqlalchemy`
+- Applying Atlas lint policies for safe migrations
+
+**This skill does NOT cover:**
+
+- Migration execution workflows or CI/CD pipelines
+- Alembic-to-Atlas cutover procedures or baselining strategies
+- Production deployment runbooks
+- Atlas Cloud or Atlas Pro features
+
+---
+
+## Core Concepts
+
+### Declarative vs Versioned Workflows
+
+Atlas supports two distinct workflows:
+
+| Aspect | Declarative (`schema apply`) | Versioned (`migrate diff` + `migrate apply`) |
+|--------|------------------------------|----------------------------------------------|
+| **How it works** | Compare desired state to live DB, apply diff directly | Generate migration files, review, then apply sequentially |
+| **Migration files** | None — Atlas computes diff on-the-fly | Yes — SQL files in `migrations/` directory |
+| **Review step** | No human review before apply | Human reviews generated SQL before apply |
+| **Rollback** | Re-apply previous desired state | `migrate down` with explicit steps |
+| **Production use** | Not recommended | Required for production |
+| **Best for** | Development, prototyping | Production, team workflows, auditable changes |
+
+**Use the Versioned workflow** for all environments.
+
+### Schema-as-Code
+
+Atlas derives the **desired state** of your database from one or more sources:
+
+1. **HCL files** — Atlas's own schema language (`.hcl`)
+2. **SQL files** — Plain SQL `CREATE TABLE` statements
+3. **ORM via `external_schema`** — SQLAlchemy/SQLModel models converted to DDL at diff time
+
+When using SQLModel, models are the single source of truth.
+
+### Source of Truth Chain
+
+```
+SQLModel models (Python classes)
+    |
+    v
+load_models.py + print_ddl()    -- imports all models, prints DDL to stdout
+    |
+    v
+DDL stdout                      -- CREATE TABLE / CREATE INDEX / etc.
+    |
+    v
+Atlas diff                      -- compares DDL against current migration state
+    |
+    v
+Migration SQL file              -- generated .sql file in migrations/ directory
+    |
+    v
+Database                        -- migration applied via atlas migrate apply
+```
+
+### Dev Database
+
+Atlas uses an ephemeral **dev database** to normalize schemas and compute diffs. It spins up a temporary container, replays the desired state and current state, then diffs them.
+
+```
+docker://postgres/16/dev?search_path=public
+```
+
+- Requires Docker running locally
+- Container is created and destroyed automatically per `diff`/`lint` operation
+- No persistent data — purely for schema comparison
+- The `search_path=public` parameter sets the default schema
+
+---
+
+## Project Structure
+
+A typical Atlas project using SQLModel:
+
+```
+project-root/
+├── atlas.hcl              # Atlas configuration (environments, schemas, lint)
+├── load_models.py         # Script that prints SQLModel DDL to stdout
+├── migrations/            # Versioned migration directory
+│   ├── atlas.sum          # Integrity checksum file (auto-generated)
+│   ├── 20250101120000_initial.sql
+│   ├── 20250102120000_add_users.sql
+│   └── ...
+└── src/
+    └── models/            # SQLModel definitions
+```
+
+### Key Files
+
+| File | Purpose | Edited by |
+|------|---------|-----------|
+| `atlas.hcl` | Atlas configuration: environments, schemas, lint rules, diff policies | Developer (manual) |
+| `load_models.py` | Imports all models and prints DDL to stdout for Atlas | Developer (rarely) |
+| `migrations/*.sql` | Versioned migration SQL files | Atlas (generated), Developer (reviewed) |
+| `migrations/atlas.sum` | Integrity checksum of all migration files | Atlas (auto-generated) |
+
+### atlas.sum Integrity Rules
+
+- `atlas.sum` is auto-generated by Atlas — **never edit it manually**
+- It **must** be committed to version control
+- It contains a hash of every migration file in order
+- `atlas migrate validate` checks integrity
+- If `atlas.sum` is out of sync, run `atlas migrate hash` to regenerate
+
+---
+
+## atlas.hcl Configuration Reference
+
+### Variable Block
+
+Define variables that can be set via `--var` flags or environment variables:
+
+```hcl
+variable "database_url" {
+  type    = string
+  default = getenv("DATABASE_URL")
+}
+```
+
+### External Schema Block
+
+Load the desired schema from an external program (ORM models):
+
+```hcl
+data "external_schema" "sqlmodel" {
+  program = [
+    "uv", "run", "python", "load_models.py",
+  ]
+}
+```
+
+This executes `load_models.py`, captures the DDL printed to stdout, and uses it as the desired state.
+
+### Composite Schema Block
+
+Combine multiple schema sources (e.g., ORM models + manual SQL for extensions or RLS policies):
+
+```hcl
+data "composite_schema" "app" {
+  schema "public" {
+    url = data.external_schema.sqlmodel.url
+  }
+  schema "public" {
+    url = "file://schema/extensions.sql"
+  }
+}
+```
+
+Use `composite_schema` when you need schema elements that cannot be expressed in the ORM (PostgreSQL extensions, row-level security policies, custom types, etc.).
+
+### Environment Block
+
+Define a named environment with all Atlas settings:
+
+```hcl
+env "local" {
+  src = data.external_schema.sqlmodel.url
+  url = var.database_url
+  dev = "docker://postgres/16/dev?search_path=public"
+
+  schemas = ["public"]
+  exclude = ["_alembic_*"]
+
+  migration {
+    dir    = "file://migrations"
+    format = atlas
+  }
+
+  diff {
+    skip {
+      drop_schema = true
+    }
+    concurrent_index {
+      create = true
+    }
+  }
+
+  lint {
+    destructive {
+      error = true
+    }
+    data_depend {
+      error = true
+    }
+  }
+}
+```
+
+### Environment Block Attributes
+
+| Attribute | Purpose | Example |
+|-----------|---------|---------|
+| `src` | Desired schema source | `data.external_schema.sqlmodel.url` |
+| `url` | Target database URL | `var.database_url` |
+| `dev` | Dev database URL (ephemeral) | `"docker://postgres/16/dev?search_path=public"` |
+| `schemas` | Schema names to manage | `["public"]` |
+| `exclude` | Table patterns to ignore | `["_alembic_*"]` |
+
+### Migration Block
+
+Configure the migration directory and behavior:
+
+```hcl
+migration {
+  dir          = "file://migrations"
+  format       = atlas
+  baseline     = "20250101120000"
+  exec_order   = linear
+  lock_timeout = "10s"
+}
+```
+
+| Attribute | Purpose | Default |
+|-----------|---------|---------|
+| `dir` | Path to migration directory | `"file://migrations"` |
+| `format` | Migration file format | `atlas` |
+| `baseline` | Starting migration version (skip earlier) | None |
+| `exec_order` | Execution order: `linear` or `linear-skip` | `linear` |
+| `lock_timeout` | Advisory lock timeout for concurrent applies | `"10s"` |
+
+### Diff Block
+
+Control migration generation behavior:
+
+```hcl
+diff {
+  skip {
+    drop_schema = true
+  }
+  concurrent_index {
+    create = true
+  }
+}
+```
+
+| Attribute | Purpose |
+|-----------|---------|
+| `skip.drop_schema` | Prevent generating `DROP SCHEMA` statements |
+| `skip.drop_table` | Prevent generating `DROP TABLE` statements |
+| `concurrent_index.create` | Generate `CREATE INDEX CONCURRENTLY` instead of `CREATE INDEX` |
+
+### Lint Block
+
+See [Linting Policy Reference](#linting-policy-reference) for full details.
+
+### Locals Block
+
+Define local values for reuse within the configuration:
+
+```hcl
+locals {
+  dev_url = "docker://postgres/16/dev?search_path=public"
+}
+```
+
+### Builtin Functions
+
+| Function | Purpose | Example |
+|----------|---------|---------|
+| `getenv("VAR")` | Read environment variable | `getenv("DATABASE_URL")` |
+| `file("path")` | Read file contents as string | `file("schema/extensions.sql")` |
+| `fileset("dir", "*.sql")` | Glob files in a directory | `fileset("schema", "*.sql")` |
+
+---
+
+## CLI Command Quick Reference
+
+### atlas migrate Commands
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `migrate diff` | Generate migration from desired-vs-current diff | `atlas migrate diff --env local` |
+| `migrate lint` | Lint pending migration files | `atlas migrate lint --env local --latest 1` |
+| `migrate apply` | Apply pending migrations to target database | `atlas migrate apply --env local` |
+| `migrate status` | Show migration status (applied, pending) | `atlas migrate status --env local` |
+| `migrate validate` | Verify migration directory integrity | `atlas migrate validate --env local` |
+| `migrate hash` | Regenerate `atlas.sum` checksum file | `atlas migrate hash` |
+| `migrate set` | Manually set migration version in database | `atlas migrate set --env local 20250101120000` |
+| `migrate down` | Roll back applied migrations | `atlas migrate down --env local 1` |
+| `migrate import` | Import migrations from another tool (e.g., Alembic) | `atlas migrate import --from "file://alembic/versions" --to "file://migrations"` |
+| `migrate checkpoint` | Squash migrations into a single checkpoint | `atlas migrate checkpoint --env local` |
+
+### atlas schema Commands
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `schema inspect` | Print current database schema as HCL/SQL | `atlas schema inspect --env local` |
+| `schema diff` | Compare two schema sources | `atlas schema diff --from "file://a" --to "file://b"` |
+| `schema apply` | Apply desired schema directly (declarative) | `atlas schema apply --env local` |
+| `schema clean` | Drop all objects in the target schema | `atlas schema clean --env local` |
+
+### Global Flags
+
+| Flag | Purpose | Example |
+|------|---------|---------|
+| `--config` | Path to `atlas.hcl` config file | `--config file://atlas.hcl` |
+| `--env` | Named environment to use | `--env local` |
+| `--var` | Override a variable | `--var database_url=postgres://...` |
+| `--dry-run` | Print planned SQL without executing | `--dry-run` |
+
+### Common Commands
+
+```bash
+# Generate a new migration after changing SQLModel models
+atlas migrate diff --env local
+
+# Lint the latest generated migration
+atlas migrate lint --env local --latest 1
+
+# Apply pending migrations to local database
+atlas migrate apply --env local
+
+# Check migration status
+atlas migrate status --env local
+
+# Validate migration directory integrity
+atlas migrate validate --env local
+
+# Inspect current database schema
+atlas schema inspect --env local --format '{{ sql . }}'
+
+# Dry-run migration apply (see SQL without executing)
+atlas migrate apply --env local --dry-run
+```
+
+---
+
+## Python Integration
+
+### atlas-provider-sqlalchemy
+
+The `atlas-provider-sqlalchemy` package bridges SQLAlchemy/SQLModel models to Atlas. Install via:
+
+```bash
+uv add atlas-provider-sqlalchemy
+```
+
+It provides the `dump_ddl()` function that converts SQLAlchemy `MetaData` into DDL SQL statements written to stdout, which Atlas reads via `external_schema`.
+
+### load_models.py Template
+
+This script is the glue between SQLModel models and Atlas:
+
+```python
+"""Print DDL for all SQLModel models (consumed by Atlas via external_schema)."""
+
+from atlas_provider_sqlalchemy.ddl import dump_ddl
+from your_app.database.base import SQLModelBase
+from your_app.database.model_loader import load_all_models
+
+# Ensure all models are imported so SQLModelBase.metadata is fully populated.
+load_all_models()
+
+# Print the DDL for all registered models to stdout.
+dump_ddl("postgresql", [SQLModelBase.metadata], [])
+```
+
+**How it works:**
+
+1. `load_all_models()` imports every model module so that `SQLModelBase.metadata` contains all table definitions
+2. `dump_ddl("postgresql", [SQLModelBase.metadata], [])` converts the metadata to PostgreSQL DDL and writes it to stdout
+3. Atlas captures this stdout output via the `data "external_schema"` block in `atlas.hcl`
+
+### Script Mode vs Standalone Mode
+
+`atlas-provider-sqlalchemy` supports two modes:
+
+| Mode | How Models Are Found | When to Use |
+|------|---------------------|-------------|
+| **Script Mode** | Developer writes a `load_models.py` script that explicitly imports models and calls `print_ddl()` | Complex projects with many modules, distributed bounded contexts |
+| **Standalone Mode** | Atlas runs the provider directly, auto-discovering models via a `--path` flag | Simple projects with models in a single directory |
+
+Use **Script Mode** for projects where models are distributed across multiple bounded contexts. A `load_all_models()` function handles deterministic model discovery by importing all model modules so that `SQLModelBase.metadata` is fully populated.
+
+---
+
+## Linting Policy Reference
+
+Atlas lint checks migration files for dangerous or risky operations before they are applied.
+
+### Destructive Changes (DS)
+
+| Code | Rule | What It Catches |
+|------|------|-----------------|
+| DS101 | Drop schema | `DROP SCHEMA` statements |
+| DS102 | Drop table | `DROP TABLE` statements |
+| DS103 | Drop column | `ALTER TABLE ... DROP COLUMN` statements |
+
+```hcl
+lint {
+  destructive {
+    error = true
+  }
+}
+```
+
+### Data-Dependent Changes (MF)
+
+| Code | Rule | What It Catches |
+|------|------|-----------------|
+| MF101 | Add unique index on existing data | Unique constraint on column that may have duplicates |
+| MF102 | Add non-nullable column without default | `ALTER TABLE ADD COLUMN ... NOT NULL` without `DEFAULT` |
+| MF103 | Modify column type | Changing column type that may lose data |
+| MF104 | Add check constraint to existing data | Check constraint that existing rows may violate |
+
+```hcl
+lint {
+  data_depend {
+    error = true
+  }
+}
+```
+
+### Backward Incompatible (BC)
+
+| Code | Rule | What It Catches |
+|------|------|-----------------|
+| BC101 | Rename table | `ALTER TABLE ... RENAME TO` |
+| BC102 | Rename column | `ALTER TABLE ... RENAME COLUMN` |
+
+```hcl
+lint {
+  incompatible {
+    error = true
+  }
+}
+```
+
+### Naming Conventions
+
+Enforce constraint naming patterns:
+
+```hcl
+lint {
+  naming {
+    match   = "^[a-z_]+$"
+    message = "must be lowercase with underscores"
+
+    index {
+      match   = "^ix_"
+      message = "index names must start with ix_"
+    }
+    check {
+      match   = "^ck_"
+      message = "check constraint names must start with ck_"
+    }
+    foreign_key {
+      match   = "^fk_"
+      message = "foreign key names must start with fk_"
+    }
+  }
+}
+```
+
+Note: Atlas naming lint supports `schema`, `table`, `column`, `index`, `foreign_key`, and `check` sub-blocks.
+
+These patterns correspond to a standard `NAMING_CONVENTION` dict:
+
+```python
+NAMING_CONVENTION: dict[str, str] = {
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s",
+}
+```
+
+### Concurrent Index (PG)
+
+PostgreSQL-specific lint rules for index creation:
+
+| Code | Rule | What It Catches |
+|------|------|-----------------|
+| PG101 | Non-concurrent index on existing table | `CREATE INDEX` without `CONCURRENTLY` on table with data |
+| PG102 | Missing `txmode none` directive | Concurrent index in a transaction block (will fail) |
+| PG103 | Index not verified after creation | Concurrent index may be left `INVALID` |
+
+```hcl
+lint {
+  concurrent_index {
+    error = true
+  }
+}
+```
+
+When creating concurrent indexes, the migration file **must** include the Atlas transaction-mode directive:
+
+```sql
+-- atlas:txmode none
+
+CREATE INDEX CONCURRENTLY ix_users_email ON users (email);
+```
+
+### Per-Check Overrides
+
+Override lint severity for specific checks using file-level annotations in migration SQL:
+
+```sql
+-- atlas:nolint DS102
+DROP TABLE deprecated_table;
+```
+
+---
+
+## Anti-Patterns
+
+### 1. Editing atlas.sum Manually
+
+```
+WRONG: Manually editing or deleting atlas.sum to fix checksum errors
+FIX:   Run `atlas migrate hash` to regenerate, or `atlas migrate validate` to diagnose
+```
+
+### 2. Using schema apply in Production
+
+```
+WRONG: atlas schema apply --env production
+FIX:   atlas migrate apply --env production
+       (Always use versioned workflow in production for auditability and rollback)
+```
+
+### 3. Skipping the Dev Database
+
+```
+WRONG: atlas migrate diff --to "file://schema.sql" (no --dev-url)
+FIX:   atlas migrate diff --env local
+       (The env block includes dev = "docker://postgres/16/dev?search_path=public")
+       (Dev database normalizes schemas and catches errors before generating migrations)
+```
+
+### 4. Hardcoding Database URLs in atlas.hcl
+
+```hcl
+# WRONG
+env "local" {
+  url = "postgres://user:password@localhost:5432/mydb"
+}
+```
+
+```hcl
+# FIX — use variables with getenv()
+variable "database_url" {
+  type    = string
+  default = getenv("DATABASE_URL")
+}
+
+env "local" {
+  url = var.database_url
+}
+```
+
+### 5. Importing Models Without a Loader Script
+
+```python
+# WRONG — only imports models from one module, misses others
+from myapp.models import User
+from atlas_provider_sqlalchemy.ddl import dump_ddl
+dump_ddl("postgresql", [User.metadata], [])
+```
+
+```python
+# FIX — use load_all_models() to ensure complete metadata
+from your_app.database.model_loader import load_all_models
+from your_app.database.base import SQLModelBase
+from atlas_provider_sqlalchemy.ddl import dump_ddl
+
+load_all_models()
+dump_ddl("postgresql", [SQLModelBase.metadata], [])
+```
+
+### 6. Running migrate diff Against Production
+
+```
+WRONG: atlas migrate diff --env production
+       (Diffs against live production database — risky and slow)
+FIX:   atlas migrate diff --env local
+       (Always diff against the dev database; the dev database replays migrations
+       to build current state, then compares against desired state from models)
+```
+
+### 7. Forgetting txmode Directive for Concurrent Index
+
+```sql
+-- WRONG — concurrent index inside a transaction will fail
+CREATE INDEX CONCURRENTLY ix_users_email ON users (email);
+```
+
+```sql
+-- FIX — disable transaction wrapping for this migration
+-- atlas:txmode none
+
+CREATE INDEX CONCURRENTLY ix_users_email ON users (email);
+```
+
+---
+
+## Checklist
+
+- [ ] `atlas.hcl` exists with a valid environment block
+- [ ] `load_models.py` exists and calls `load_all_models()` then `dump_ddl()`
+- [ ] `migrations/` directory exists with `atlas.sum` committed to version control
+- [ ] `data "external_schema"` block uses the model loader script
+- [ ] `env` block includes `dev = "docker://postgres/16/dev?search_path=public"`
+- [ ] `env` block includes `schemas = ["public"]`
+- [ ] Destructive lint enabled (`destructive { error = true }`)
+- [ ] Data-dependent lint enabled (`data_depend { error = true }`)
+- [ ] Naming convention lint matches `NAMING_CONVENTION` (`ix_`, `ck_`, `fk_`)
+- [ ] Concurrent index lint enabled (`concurrent_index { error = true }`)
+- [ ] Diff policy: `skip.drop_schema = true`
+- [ ] Diff policy: `concurrent_index.create = true`
+- [ ] `atlas.sum` is committed and `atlas migrate validate` passes
+- [ ] Database credentials use `getenv()`, not hardcoded values
+
+---
+
+## Guidelines
+
+### DO
+
+- Use the **versioned workflow** (`migrate diff` + `migrate apply`) for all environments
+- Use the **dev database** (`docker://postgres/16/dev?search_path=public`) for all diff and lint operations
+- Use `getenv()` for all database URLs and credentials in `atlas.hcl`
+- Enable **all lint checks** (destructive, data-depend, naming, concurrent index)
+- Review every generated migration file before committing
+- Use `--dry-run` flag when testing `migrate apply` for the first time
+- Run `atlas migrate validate` in CI to catch integrity issues
+- Use `-- atlas:txmode none` for any migration containing `CONCURRENTLY`
+- Keep `atlas.sum` committed and up to date
+
+### DON'T
+
+- Use `schema apply` in production (no audit trail, no rollback)
+- Edit `atlas.sum` manually (use `atlas migrate hash` to regenerate)
+- Hardcode database credentials in `atlas.hcl` (use `getenv()`)
+- Skip the dev database when generating diffs (results will be unreliable)
+- Diff against a production database (use dev database instead)
+- Modify generated migration files without re-running `atlas migrate hash`
+- Ignore lint warnings — they indicate real risks to production data

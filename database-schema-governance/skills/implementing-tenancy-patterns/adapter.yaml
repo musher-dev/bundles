@@ -1,0 +1,35 @@
+# adapter.yaml — implementing-tenancy-patterns
+# Primary: Claude Code (fields merged into SKILL.md frontmatter)
+# Stubs: Copilot, Codex, OpenHands, Gemini CLI
+
+claude:
+  version: 1.0.0
+  user-invocable: true
+  allowed-tools:
+    - Read
+    - Write
+    - Edit
+    - Grep
+    - Glob
+
+# copilot:
+#   user-invocable: true
+#   disable-model-invocation: false
+
+# codex:
+#   allow_implicit_invocation: true
+#   dependencies:
+#     tools:
+#       - filesystem
+#       - grep
+
+# openhands:
+#   triggers:
+#     - multi-tenant schema
+#     - tenant isolation
+#     - tenancy patterns
+#     - RBAC schema
+#     - tenant_id
+
+# gemini:
+#   user-invocable: true

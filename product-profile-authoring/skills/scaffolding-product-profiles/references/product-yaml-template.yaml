@@ -1,0 +1,81 @@
+# Product Profile — Canonical Metadata
+# Schema.org-aligned product metadata for machine-readable product documentation.
+# See schema-org-mapping.md in the writing-product-metadata skill for property mappings.
+
+# Unique identifier (kebab-case, matches directory name)
+id: "example-product"
+
+# Display name
+name: "Example Product"
+
+# One-line value proposition (< 120 characters)
+tagline: ""
+
+# Lifecycle status: discovery | development | beta | ga | sunset | retired
+status: "discovery"
+
+# Product owner (team or individual)
+owner: ""
+
+# Target audiences (list of role descriptors)
+audiences: []
+  # - "Engineering leads at Series A-C startups"
+  # - "Platform engineers managing internal developer tools"
+
+# Problem statement (2-3 sentences: trigger, impact, cost of inaction)
+problem_statement: ""
+
+# Core use cases (list of verb-noun pairs describing what users accomplish)
+use_cases: []
+  # - "Automate schema migration reviews"
+  # - "Detect drift between environments"
+
+# Core capabilities (what the product does, not features)
+core_capabilities: []
+  # - "Automated policy enforcement"
+  # - "Real-time drift detection"
+
+# Differentiators (unique-to-this-product capabilities with proof)
+differentiators: []
+  # - capability: "Open-source engine with MIT license"
+  #   proof: "GitHub repository with 10K+ stars"
+
+# Non-goals (what this product explicitly does not do)
+non_goals: []
+  # - "Enterprise white-glove onboarding"
+  # - "No-code visual builder"
+
+# Pricing and packaging summary
+pricing_packaging: ""
+  # "Free tier + usage-based Pro plan. Enterprise with custom SLAs."
+
+# Integration points (systems, APIs, platforms this product connects to)
+integrations: []
+  # - "GitHub Actions"
+  # - "Slack webhooks"
+  # - "REST API"
+
+# Security and compliance posture (certifications, frameworks)
+security_compliance: []
+  # - "SOC 2 Type II"
+  # - "GDPR compliant"
+
+# Proof points (metrics, testimonials, case studies)
+proof_points: []
+  # - type: "metric"
+  #   claim: "99.9% uptime over 24 months"
+  # - type: "testimonial"
+  #   claim: "'Cut review time by 60%' — VP Eng, Acme Corp"
+
+# Documentation URL
+docs_url: ""
+
+# Marketing site URL
+marketing_url: ""
+
+# Roadmap summary (high-level, synced from roadmap.md)
+roadmap_summary: ""
+  # "Now: Core API stabilization. Next: Plugin ecosystem. Later: Self-hosted option."
+
+# ISO 8601 date of last review
+last_reviewed: ""
