@@ -172,6 +172,12 @@ When reviewing or auditing HTTP semantics, evaluate these dimensions:
 - Do error responses use `application/problem+json`?
 - Is `415 Unsupported Media Type` returned for wrong Content-Types?
 
+### Related Skills
+
+- **`governing-mutation-semantics`** -- Extends PUT and PATCH method semantics with detailed mutation rules including JSON Merge Patch, `exclude_unset`, and array mutation strategy
+- **`governing-field-lifecycle`** -- Defines how null vs absence semantics interact with PUT and PATCH methods
+- **`governing-payload-structure`** -- Defines the document shapes that HTTP methods operate on (state representations, commands, partial mutations)
+
 ---
 
 ## Anti-Patterns

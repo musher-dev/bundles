@@ -304,6 +304,12 @@ When reviewing or auditing OpenAPI compliance, evaluate these dimensions:
 - Is `\f` used to exclude internal notes from the spec?
 - Are tags applied consistently with metadata defined?
 
+### Related Skills
+
+- **`governing-schema-implementation`** -- Extends response model declarations with Pydantic V2 configuration including `JsonSchemaMode`, `Discriminator` for `oneOf`, and `alias_generator` for camelCase wire format
+- **`governing-field-lifecycle`** -- Defines OpenAPI 3.1 nullability representation (`required` array vs `type: ["string", "null"]`)
+- **`governing-payload-structure`** -- Defines the contract types whose schemas appear in the OpenAPI spec
+
 ---
 
 ## Anti-Patterns

@@ -2,7 +2,7 @@
 name: auditing-route-compliance
 version: 1.0.0
 user-invocable: false
-description: Guide structured audit execution for API route compliance using a 4-category question bank covering Structural Integrity, Protocol Semantics, Contract Definition, and Documentation, with Pass/Warn/Fail severity model mapped to Critical/Major/Minor/Cosmetic levels, and CI tool recommendations including Spectral, Optic, and Schemathesis. Use when conducting API audits, reviewing route compliance, prioritizing API technical debt, or setting up CI governance tooling. Triggered by: route audit, API audit, compliance audit, route compliance, audit rubric, Spectral, Optic, Schemathesis, CI governance, API linting, spec linting, audit question bank, severity model, API quality gate.
+description: Guide structured audit execution for API route and payload compliance using a 5-category question bank covering Structural Integrity, Protocol Semantics, Contract Definition, Documentation, and Payload Governance, with Pass/Warn/Fail severity model mapped to Critical/Major/Minor/Cosmetic levels, FAIL/WARN CI rubric, Spectral ruleset examples, Oasdiff breaking change detection, migration strategy, and CI tool recommendations including Spectral, Optic, and Schemathesis. Use when conducting API audits, reviewing route compliance, auditing payload structure, prioritizing API technical debt, or setting up CI governance tooling. Triggered by: route audit, API audit, compliance audit, route compliance, payload audit, audit rubric, Spectral, Optic, Schemathesis, CI governance, API linting, spec linting, audit question bank, severity model, API quality gate, Oasdiff, breaking change, migration strategy.
 allowed-tools:
   - Read
   - Grep
@@ -91,6 +91,33 @@ Questions about spec completeness, metadata, and discoverability.
 | D9 | Are breaking changes classified and tracked? | governing-api-versioning | Major |
 | D10 | Is a deprecation timeline published for deprecated endpoints? | governing-api-versioning | Minor |
 
+### Category 5: Payload Governance
+
+Questions about payload structure, field serialization, field lifecycle, mutation semantics, and schema implementation.
+
+| # | Question | Governance Source | Severity if Failed |
+|---|----------|-------------------|-------------------|
+| P-G1 | Are all response bodies top-level JSON objects (no bare arrays)? | governing-payload-structure | Major |
+| P-G2 | Do collection responses use the `items` array wrapper? | governing-payload-structure | Major |
+| P-G3 | Are separate Pydantic models used for create, update, patch, and response? | governing-payload-structure | Major |
+| P-G4 | Do all timestamp fields use RFC 3339 format with `_time` suffix? | governing-field-serialization | Major |
+| P-G5 | Are monetary values represented as objects (not floats)? | governing-field-serialization | Critical |
+| P-G6 | Are enum values serialized as `UPPER_SNAKE_CASE` strings (not numbers)? | governing-field-serialization | Major |
+| P-G7 | Are all identifiers serialized as strings (not integers)? | governing-field-serialization | Major |
+| P-G8 | Are all JSON field names `snake_case` (or consistently aliased via `alias_generator`)? | governing-field-serialization | Major |
+| P-G9 | Is `response_model_exclude_none=True` applied for absent-over-null? | governing-field-lifecycle | Major |
+| P-G10 | Are OUTPUT_ONLY fields excluded from input models? | governing-field-lifecycle | Critical |
+| P-G11 | Are IMMUTABLE fields validated against changes in update handlers? | governing-field-lifecycle | Major |
+| P-G12 | Does the OpenAPI spec correctly represent required vs nullable per field? | governing-field-lifecycle | Minor |
+| P-G13 | Does PUT replace the entire resource (omitted optionals reset to defaults)? | governing-mutation-semantics | Major |
+| P-G14 | Does PATCH use `application/merge-patch+json` Content-Type? | governing-mutation-semantics | Major |
+| P-G15 | Does PATCH deserialization use `exclude_unset=True`? | governing-mutation-semantics | Critical |
+| P-G16 | Are arrays mutated through dedicated sub-resource endpoints (not PATCH)? | governing-mutation-semantics | Major |
+| P-G17 | Does every endpoint declare a `response_model`? | governing-schema-implementation | Major |
+| P-G18 | Are response models dedicated output classes (not ORM models)? | governing-schema-implementation | Critical |
+| P-G19 | Do models follow `ResourceCreate`/`ResourceUpdate`/`ResourcePatch`/`ResourceResponse` naming? | governing-schema-implementation | Minor |
+| P-G20 | Do polymorphic types use `Discriminator` for clean `oneOf` in OpenAPI? | governing-schema-implementation | Minor |
+
 ---
 
 ## Severity Model
@@ -122,6 +149,8 @@ Calculate the compliance percentage per category and overall:
 Category Score = (Pass count + 0.5 * Warn count) / Total questions * 100
 Overall Score = Average of all category scores
 ```
+
+Note: With the addition of Payload Governance (P-G1 through P-G20), the audit now covers 60 questions across 5 categories.
 
 | Overall Score | Rating | Interpretation |
 |--------------|--------|----------------|
@@ -174,7 +203,15 @@ Walk through questions D1-D10. For each:
 3. Verify naming consistency across query params and response properties
 4. Assign Pass/Warn/Fail rating
 
-### Step 6: Severity Prioritization
+### Step 6: Payload Governance Audit
+
+Walk through questions P-G1 through P-G20. For each:
+1. Examine Pydantic models, response_model declarations, and serialization config
+2. Check field naming, typing, and lifecycle behavior annotations
+3. Verify mutation endpoint implementation (PUT/PATCH semantics)
+4. Assign Pass/Warn/Fail rating
+
+### Step 7: Severity Prioritization
 
 1. Collect all Fail and Warn findings
 2. Assign severity level (Critical/Major/Minor/Cosmetic) from the question bank
@@ -234,6 +271,82 @@ Walk through questions D1-D10. For each:
 - Validates that actual responses match declared schemas
 - Catches status code mismatches and undeclared error formats
 
+### FAIL/WARN Severity Rubric
+
+Automated CI tools should map findings to severity levels:
+
+| Finding | Severity | CI Action |
+|---------|----------|-----------|
+| Top-level bare JSON array in response | FAIL | Block merge |
+| Missing `response_model` on endpoint | FAIL | Block merge |
+| Floating-point money field | FAIL | Block merge |
+| OUTPUT_ONLY field writable in input model | FAIL | Block merge |
+| `exclude_unset` missing on PATCH handler | FAIL | Block merge |
+| ORM model used as response_model | FAIL | Block merge |
+| Non-snake_case field name (without alias_generator) | WARN | Require acknowledgment |
+| Missing `response_model_exclude_none=True` on GET | WARN | Require acknowledgment |
+
+### Spectral Ruleset Examples
+
+Add payload governance rules to `.spectral.yaml`:
+
+```yaml
+rules:
+  # Field naming: snake_case enforcement
+  payload-field-casing:
+    description: JSON properties must be snake_case
+    severity: warn
+    given: "$.paths.*.*.responses.*.content.application/json.schema..properties.*~"
+    then:
+      function: casing
+      functionOptions:
+        type: snake
+
+  # Envelope validation: no bare arrays
+  no-top-level-array:
+    description: Response schemas must be objects, not arrays
+    severity: error
+    given: "$.paths.*.*.responses.*.content.application/json.schema"
+    then:
+      field: type
+      function: enumeration
+      functionOptions:
+        values:
+          - object
+
+  # Enum casing: UPPER_SNAKE_CASE
+  enum-casing:
+    description: Enum values must be UPPER_SNAKE_CASE
+    severity: warn
+    given: "$.paths.*.*.responses.*.content.application/json.schema..enum.*"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"
+```
+
+### Oasdiff Breaking Change Detection
+
+Use Oasdiff to detect payload-level breaking changes between spec versions:
+
+| Change Type | Oasdiff Rule | Severity |
+|-------------|-------------|----------|
+| Response field removed | `response-property-removed` | FAIL |
+| Response field type changed | `response-property-type-changed` | FAIL |
+| Required request field added | `request-property-became-required` | FAIL |
+| Enum value removed | `response-property-enum-value-removed` | FAIL |
+| Optional response field added | `response-property-added` | PASS (non-breaking) |
+| New optional request field | `request-property-added` | PASS (non-breaking) |
+
+### Migration Strategy
+
+For codebases adopting payload governance incrementally:
+
+1. **Incremental linting** -- Enable Spectral rules as warnings first, promote to errors after existing violations are fixed
+2. **Tolerant reader** -- Clients must ignore unknown fields (must-ignore policy per I-JSON RFC 7493)
+3. **Content negotiation** -- Use `Content-Type` headers to distinguish merge-patch from standard JSON during migration
+4. **Graceful deprecation** -- Old response shapes served in parallel via versioned endpoints while clients migrate
+
 ### Tool Selection Matrix
 
 | Audit Category | Spectral | Optic | Schemathesis |
@@ -242,6 +355,7 @@ Walk through questions D1-D10. For each:
 | Protocol Semantics | No | Partial (changes) | Yes (runtime) |
 | Contract Definition | Partial (schema) | No | Yes (runtime) |
 | Documentation | Yes (completeness) | No | No |
+| Payload Governance | Yes (casing, envelopes) | Yes (field changes) | Yes (schema compliance) |
 
 ---
 
@@ -273,6 +387,7 @@ Structure every audit report as follows:
 | Protocol Semantics (P1-P10) | X | Y | Z | NN% |
 | Contract Definition (C1-C10) | X | Y | Z | NN% |
 | Documentation (D1-D10) | X | Y | Z | NN% |
+| Payload Governance (P-G1-P-G20) | X | Y | Z | NN% |
 | **Overall** | | | | **NN%** |
 
 ---
@@ -315,6 +430,10 @@ Structure every audit report as follows:
 | # | Question | Rating | Notes |
 |---|----------|--------|-------|
 
+### Payload Governance
+| # | Question | Rating | Notes |
+|---|----------|--------|-------|
+
 ---
 
 ## CI Governance Recommendations
@@ -344,7 +463,7 @@ Structure every audit report as follows:
 
 1. **Never modify files** -- you have Read, Grep, and Glob only
 2. **Never produce inline code fixes** -- describe what should change, not the code
-3. **Always walk through all 40 questions** -- report on every question even if it passes
+3. **Always walk through all 60 questions** -- report on every question even if it passes
 4. **Always classify severity** -- every finding gets a severity level from the question bank
 5. **Always produce the full output format** -- partial reports are not acceptable
 6. **Delegate fixes to route_designer** -- end the report by recommending which findings to hand off

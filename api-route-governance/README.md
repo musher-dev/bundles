@@ -19,6 +19,11 @@ Enforces API endpoint design standards including route naming, HTTP method usage
 - governing-api-versioning
 - governing-openapi-contracts
 - governing-collection-endpoints
+- governing-payload-structure
+- governing-field-serialization
+- governing-field-lifecycle
+- governing-mutation-semantics
+- governing-schema-implementation
 - auditing-route-compliance
 
 ### Agents

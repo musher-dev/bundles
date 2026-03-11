@@ -198,6 +198,12 @@ When reviewing or auditing route naming, evaluate these dimensions:
 - Is the `/me` alias available for user-scoped resources?
 - Do slug-capable resources accept both slug and UUID?
 
+### Related Skills
+
+- **`governing-payload-structure`** -- Defines how fields are organized within payloads (semantic field ontology) that complement route-level naming
+- **`governing-field-serialization`** -- Extends snake_case naming to JSON field names and defines identifier serialization as opaque strings
+- **`governing-mutation-semantics`** -- Defines sub-resource endpoint design for array mutation, complementing route nesting rules
+
 ---
 
 ## Anti-Patterns
