@@ -13,9 +13,17 @@ Enforces API endpoint design standards including route naming, HTTP method usage
 
 ### Skills
 - governing-tenant-routes
+- governing-route-naming
+- governing-http-semantics
+- governing-error-responses
+- governing-api-versioning
+- governing-openapi-contracts
+- governing-collection-endpoints
+- auditing-route-compliance
 
 ### Agents
-- None
+- route_auditor
+- route_designer
 
 ### Tools
 - None
