@@ -41,6 +41,7 @@ When included, the technology prefix is a single lowercase token (e.g., `aws`, `
 | `marketing-site` | Marketing website creation, content production, design system enforcement, and conversion-focused page authoring |
 | `product-profile` | Canonical product documentation encompassing machine-readable metadata, strategic positioning, roadmaps, and technical specifications for a product or product line |
 | `project-shaping` | Upstream product development: problem framing, solution design, risk assessment, and scope definition prior to build commitment |
+| `specification` | Standards-based specification documents, contract definitions, and schema compliance |
 
 ## Purpose Vocabulary
 
