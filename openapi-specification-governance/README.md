@@ -25,7 +25,10 @@ This bundle governs the OpenAPI specification document itself, framework-agnosti
 | `governing-component-reuse` | `$ref` patterns, inline schema anti-patterns, schema composition (`allOf`/`oneOf`/`discriminator`), RFC 9457 ProblemDetails, SDK generation impact |
 | `governing-advanced-operations` | QUERY method via `additionalOperations`, webhooks vs callbacks, streaming media types, `itemSchema`, link objects, Overlay specification |
 | `governing-spec-extensions` | `x-` prefix rules, extension governance, portability impact, standards-over-extensions philosophy, deprecating extensions |
-| `auditing-spec-compliance` | 6-category question bank, severity model (Critical/Major/Minor/Cosmetic), compliance scorecard, Spectral/Redocly/Vacuum rulesets, CI integration |
+| `governing-spec-structure` | Multi-file spec directory layout (`paths/`, `components/`), file-level `$ref` strategies, bundling with Redocly CLI, split vs monolithic anti-patterns, root file conventions |
+| `governing-authoring-model` | Design-first vs code-first vs hybrid evaluation criteria, unidirectional authority flow, dual-schema maintenance tax, source-of-truth governance policy |
+| `governing-change-workflow` | Golden Path sequence (design → generate → implement → verify → deploy), cross-team coordination, spec-change PR conventions, backward-compatible change techniques |
+| `auditing-spec-compliance` | 9-category question bank, severity model (Critical/Major/Minor/Cosmetic), compliance scorecard, Spectral/Redocly/Vacuum rulesets, CI integration |
 
 ### Agents
 

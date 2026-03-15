@@ -197,27 +197,7 @@ components:
 
 ### Multi-File Specs
 
-For large APIs, split components across files using file-relative `$ref`:
-
-```yaml
-# openapi.yaml (root)
-paths:
-  /projects:
-    $ref: "./paths/projects.yaml"
-
-components:
-  schemas:
-    Project:
-      $ref: "./schemas/project.yaml"
-    ProblemDetail:
-      $ref: "./schemas/problem-detail.yaml"
-```
-
-**Rules for multi-file specs:**
-- Root file contains `info`, `servers`, `security`, and `$ref` pointers
-- One file per resource domain under `paths/`
-- Shared schemas in `schemas/` directory
-- Use tools like `swagger-cli bundle` to produce a single-file output for consumers
+For multi-file spec directory layout, file-level `$ref` strategies, bundling, and root file conventions, see `governing-spec-structure`.
 
 ---
 

@@ -2,7 +2,7 @@
 name: auditing-spec-compliance
 version: 1.0.0
 user-invocable: false
-description: Guide structured audit execution for OpenAPI specification compliance using a 6-category question bank covering Spec Metadata, Operation Identifiers, Tag Hierarchy, Component Reuse, Advanced Operations, and Extension Governance, with Pass/Warn/Fail severity model mapped to Critical/Major/Minor/Cosmetic levels, compliance scorecard, Spectral/Redocly/Vacuum ruleset recommendations, and CI pipeline integration patterns. Use when conducting OpenAPI spec audits, reviewing specification compliance, auditing spec quality, prioritizing spec technical debt, or setting up CI spec governance. Triggered by: spec audit, OpenAPI audit, specification audit, spec compliance, spec quality, spec linting, Spectral rules, Redocly, Vacuum, spec governance, spec scorecard, spec quality gate, specification review.
+description: Guide structured audit execution for OpenAPI specification compliance using a 9-category question bank covering Spec Metadata, Operation Identifiers, Tag Hierarchy, Component Reuse, Advanced Operations, Extension Governance, Spec Structure, Authoring Model, and Change Workflow, with Pass/Warn/Fail severity model mapped to Critical/Major/Minor/Cosmetic levels, compliance scorecard, Spectral/Redocly/Vacuum ruleset recommendations, and CI pipeline integration patterns. Use when conducting OpenAPI spec audits, reviewing specification compliance, auditing spec quality, prioritizing spec technical debt, or setting up CI spec governance. Triggered by: spec audit, OpenAPI audit, specification audit, spec compliance, spec quality, spec linting, Spectral rules, Redocly, Vacuum, spec governance, spec scorecard, spec quality gate, specification review.
 allowed-tools:
   - Read
   - Grep
@@ -11,11 +11,11 @@ allowed-tools:
 
 # Spec Compliance Auditing
 
-Structured audit execution framework for OpenAPI specification compliance, providing a question bank, severity model, and CI tooling recommendations.
+Structured audit execution framework for OpenAPI specification compliance, providing a 9-category question bank, severity model, and CI tooling recommendations.
 
 ## Purpose
 
-Ad-hoc spec reviews produce inconsistent results -- one reviewer checks operationIds, another checks schemas, a third skips both and focuses on tags. This skill provides a deterministic audit framework: a structured question bank that covers every governance dimension, a severity model that prioritizes findings, and CI tool recommendations that automate enforcement. The result is reproducible, comprehensive audits that produce actionable, severity-prioritized reports.
+Ad-hoc spec reviews produce inconsistent results -- one reviewer checks operationIds, another checks schemas, a third skips both and focuses on tags. This skill provides a deterministic audit framework: a structured question bank that covers every governance dimension (including spec structure, authoring model, and change workflow), a severity model that prioritizes findings, and CI tool recommendations that automate enforcement. The result is reproducible, comprehensive audits that produce actionable, severity-prioritized reports.
 
 Use this skill when conducting OpenAPI specification audits, reviewing compliance against governance standards, prioritizing spec technical debt, or setting up automated CI governance.
 
@@ -121,6 +121,49 @@ Questions about x- prefix usage, extension registry, portability, and lifecycle.
 | E6 | Is the spec valid without extensions (standard validators pass)? | governing-spec-extensions | Critical |
 | E7 | Is fallback behavior documented for each extension? | governing-spec-extensions | Minor |
 | E8 | Are org-specific extensions prefixed with the org name? | governing-spec-extensions | Cosmetic |
+
+### Category 7: Spec Structure
+
+Questions about multi-file layout, root file conventions, `$ref` strategies, and bundling.
+
+| # | Question | Governance Source | Severity if Failed |
+|---|----------|-------------------|-------------------|
+| F1 | Is the spec split into multiple files when it exceeds 500 lines or 10 operations? | governing-spec-structure | Minor |
+| F2 | Does the root file contain only metadata and `$ref` pointers (no inline definitions)? | governing-spec-structure | Major |
+| F3 | Is one `$ref` strategy used consistently across all files? | governing-spec-structure | Major |
+| F4 | Are all cross-file references using relative paths? | governing-spec-structure | Major |
+| F5 | Is bundling configured to produce a single resolved file? | governing-spec-structure | Major |
+| F6 | Is the bundle output in a `generated/` directory (separate from source)? | governing-spec-structure | Minor |
+| F7 | Do downstream tools consume the bundle, not the source files? | governing-spec-structure | Major |
+| F8 | Are path files organized one per resource domain? | governing-spec-structure | Minor |
+
+### Category 8: Authoring Model
+
+Questions about authoring model declaration, authority flow, source-of-truth policy, and maintenance tax.
+
+| # | Question | Governance Source | Severity if Failed |
+|---|----------|-------------------|-------------------|
+| W1 | Is the authoring model (design-first, code-first, hybrid) explicitly declared? | governing-authoring-model | Major |
+| W2 | Is the source-of-truth governance policy committed to the repository? | governing-authoring-model | Major |
+| W3 | Is authority flow unidirectional or explicitly bounded with documented rules? | governing-authoring-model | Major |
+| W4 | If dual-schema maintenance exists, is automated drift detection in place? | governing-authoring-model | Critical |
+| W5 | Has the authoring model been reviewed since the last major team or consumer change? | governing-authoring-model | Minor |
+| W6 | Is the authoring model enforceable by CI (not just a policy document)? | governing-authoring-model | Minor |
+
+### Category 9: Change Workflow
+
+Questions about Golden Path compliance, PR conventions, cross-team coordination, and backward compatibility.
+
+| # | Question | Governance Source | Severity if Failed |
+|---|----------|-------------------|-------------------|
+| G1 | Do spec changes follow the Golden Path sequence (design → generate → implement → verify → deploy)? | governing-change-workflow | Major |
+| G2 | Do spec-change PRs include a contract impact checklist? | governing-change-workflow | Minor |
+| G3 | Do breaking changes require consumer acknowledgment before merge? | governing-change-workflow | Critical |
+| G4 | Does deprecation precede removal by at least 2 minor versions? | governing-change-workflow | Major |
+| G5 | Are cross-team coordination patterns used for changes affecting 3+ consumers? | governing-change-workflow | Minor |
+| G6 | Are backward-compatible change techniques used by default? | governing-change-workflow | Major |
+| G7 | Do verification failures loop back to design (not forward to deploy)? | governing-change-workflow | Major |
+| G8 | Are spec-change PRs separate from implementation PRs? | governing-change-workflow | Minor |
 
 ---
 
@@ -228,7 +271,34 @@ Walk through questions E1-E8. For each:
 4. Verify spec validity without extensions
 5. Assign Pass/Warn/Fail rating
 
-### Step 8: Severity Prioritization
+### Step 8: Spec Structure Audit
+
+Walk through questions F1-F8. For each:
+1. Assess multi-file vs monolithic layout
+2. Check root file conventions
+3. Verify $ref strategy consistency
+4. Check bundling configuration
+5. Assign Pass/Warn/Fail rating
+
+### Step 9: Authoring Model Audit
+
+Walk through questions W1-W6. For each:
+1. Check for authoring model declaration
+2. Verify source-of-truth policy exists
+3. Assess authority flow boundaries
+4. Evaluate dual-schema maintenance tax
+5. Assign Pass/Warn/Fail rating
+
+### Step 10: Change Workflow Audit
+
+Walk through questions G1-G8. For each:
+1. Check Golden Path sequence compliance
+2. Review PR conventions for spec changes
+3. Evaluate cross-team coordination patterns
+4. Assess backward compatibility practices
+5. Assign Pass/Warn/Fail rating
+
+### Step 11: Severity Prioritization
 
 1. Collect all Fail and Warn findings
 2. Assign severity level from the question bank
@@ -356,6 +426,9 @@ Structure every audit report as follows:
 | Component Reuse (R1-R10) | X | Y | Z | - | NN% |
 | Advanced Operations (A1-A10) | X | Y | Z | W | NN% |
 | Extension Governance (E1-E8) | X | Y | Z | - | NN% |
+| Spec Structure (F1-F8) | X | Y | Z | - | NN% |
+| Authoring Model (W1-W6) | X | Y | Z | - | NN% |
+| Change Workflow (G1-G8) | X | Y | Z | - | NN% |
 | **Overall** | | | | | **NN%** |
 
 ---
@@ -406,6 +479,18 @@ Structure every audit report as follows:
 | # | Question | Rating | Notes |
 |---|----------|--------|-------|
 
+### Spec Structure
+| # | Question | Rating | Notes |
+|---|----------|--------|-------|
+
+### Authoring Model
+| # | Question | Rating | Notes |
+|---|----------|--------|-------|
+
+### Change Workflow
+| # | Question | Rating | Notes |
+|---|----------|--------|-------|
+
 ---
 
 ## CI Governance Recommendations
@@ -435,7 +520,7 @@ Structure every audit report as follows:
 
 1. **Never modify files** -- you have Read, Grep, and Glob only
 2. **Never produce inline code fixes** -- describe what should change, not the code
-3. **Always walk through all questions** -- report on every question even if it passes (mark N/A for inapplicable)
+3. **Always walk through all questions across all 9 categories** -- report on every question even if it passes (mark N/A for inapplicable)
 4. **Always classify severity** -- every finding gets a severity level from the question bank
 5. **Always produce the full output format** -- partial reports are not acceptable
 6. **Delegate fixes to spec_designer** -- end the report by recommending which findings to hand off
