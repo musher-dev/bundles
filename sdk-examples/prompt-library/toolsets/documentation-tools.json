@@ -1,0 +1,40 @@
+{
+  "name": "documentation-tools",
+  "description": "Tool configurations for documentation generation, validation, and publishing workflows.",
+  "tools": {
+    "doc_generator": {
+      "enabled": true,
+      "description": "Generate API reference documentation from source code annotations",
+      "config": {
+        "output_format": "markdown",
+        "include_private": false,
+        "include_examples": true
+      }
+    },
+    "link_checker": {
+      "enabled": true,
+      "description": "Validate all internal and external links in documentation",
+      "config": {
+        "check_external": true,
+        "timeout_seconds": 10,
+        "ignore_patterns": ["localhost", "example.com"]
+      }
+    },
+    "spell_checker": {
+      "enabled": true,
+      "description": "Check spelling in documentation files",
+      "config": {
+        "language": "en-US",
+        "custom_dictionary": ["musher", "sdk", "yaml", "json", "cli", "api"]
+      }
+    },
+    "readability_scorer": {
+      "enabled": true,
+      "description": "Score documentation readability and flag complex passages",
+      "config": {
+        "target_grade_level": 8,
+        "max_sentence_length": 25
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "restricted-tools",
+  "description": "Read-only tool permissions for auditing and review workflows. No file writes or terminal access.",
+  "tools": {
+    "file_read": {
+      "enabled": true,
+      "description": "Read files from the workspace"
+    },
+    "file_write": {
+      "enabled": false,
+      "description": "Disabled — this toolset is read-only"
+    },
+    "file_search": {
+      "enabled": true,
+      "description": "Search file contents by pattern"
+    },
+    "terminal": {
+      "enabled": false,
+      "description": "Disabled — no shell access in restricted mode"
+    },
+    "web_search": {
+      "enabled": true,
+      "description": "Search the web for documentation and references"
+    }
+  }
+}

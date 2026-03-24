@@ -1,0 +1,30 @@
+name: musher-examples/agent-toolkit
+version: 2.0.0
+description: >
+  Reference bundle demonstrating the full breadth of Musher asset types.
+  Contains prompts, skills, toolsets, agent specs, configs, and rules —
+  ideal for learning bundle structure and SDK enumeration APIs.
+
+assets:
+  - logical_path: prompts/system.md
+    asset_type: prompt
+  - logical_path: prompts/safety-guidelines.md
+    asset_type: prompt
+  - logical_path: skills/researching-codebases/SKILL.md
+    asset_type: skill
+  - logical_path: skills/explaining-architecture/SKILL.md
+    asset_type: skill
+  - logical_path: toolsets/default-tools.json
+    asset_type: toolset
+  - logical_path: toolsets/restricted-tools.json
+    asset_type: toolset
+  - logical_path: agent_specs/code-assistant.json
+    asset_type: agent_spec
+  - logical_path: agent_specs/review-assistant.json
+    asset_type: agent_spec
+  - logical_path: configs/model-settings.json
+    asset_type: config
+  - logical_path: rules/output-formatting.md
+    asset_type: rule
+  - logical_path: rules/code-style.md
+    asset_type: rule

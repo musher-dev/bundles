@@ -1,0 +1,39 @@
+{
+  "name": "code-analysis-tools",
+  "description": "Tool configurations for static analysis, linting, and code quality workflows.",
+  "tools": {
+    "linter": {
+      "enabled": true,
+      "description": "Run language-specific linters on source files",
+      "config": {
+        "auto_fix": false,
+        "fail_on_warning": false,
+        "exclude_patterns": ["**/vendor/**", "**/node_modules/**", "**/.venv/**"]
+      }
+    },
+    "type_checker": {
+      "enabled": true,
+      "description": "Run static type checking",
+      "config": {
+        "strict_mode": true,
+        "ignore_missing_imports": false
+      }
+    },
+    "complexity_analyzer": {
+      "enabled": true,
+      "description": "Measure cyclomatic complexity and flag functions exceeding thresholds",
+      "config": {
+        "max_complexity": 10,
+        "max_function_length": 50
+      }
+    },
+    "dependency_scanner": {
+      "enabled": true,
+      "description": "Scan dependencies for known vulnerabilities",
+      "config": {
+        "fail_on_severity": "high",
+        "ignore_dev_dependencies": false
+      }
+    }
+  }
+}
