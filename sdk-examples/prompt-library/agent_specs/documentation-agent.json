@@ -1,0 +1,21 @@
+{
+  "name": "documentation-agent",
+  "description": "Technical writing assistant optimized for generating and reviewing developer documentation.",
+  "model": "claude-sonnet-4-6",
+  "temperature": 0.4,
+  "max_tokens": 4096,
+  "system_prompt": "prompts/documentation-standards.md",
+  "toolset": "documentation-tools",
+  "capabilities": [
+    "doc_generation",
+    "doc_review",
+    "api_reference",
+    "tutorial_writing",
+    "changelog_drafting"
+  ],
+  "context": {
+    "include_file_contents": true,
+    "include_git_diff": false,
+    "max_context_files": 10
+  }
+}

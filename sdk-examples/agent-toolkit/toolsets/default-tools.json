@@ -1,0 +1,30 @@
+{
+  "name": "default-tools",
+  "description": "Standard tool permissions for a coding assistant with full read/write access.",
+  "tools": {
+    "file_read": {
+      "enabled": true,
+      "description": "Read files from the workspace"
+    },
+    "file_write": {
+      "enabled": true,
+      "description": "Create and modify files in the workspace"
+    },
+    "file_search": {
+      "enabled": true,
+      "description": "Search file contents by pattern"
+    },
+    "terminal": {
+      "enabled": true,
+      "description": "Execute shell commands",
+      "restrictions": {
+        "allow_background": false,
+        "timeout_seconds": 120
+      }
+    },
+    "web_search": {
+      "enabled": true,
+      "description": "Search the web for documentation and references"
+    }
+  }
+}

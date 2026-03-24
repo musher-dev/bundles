@@ -1,0 +1,20 @@
+name: musher-examples/code-review-kit
+version: 1.2.0
+description: >
+  Code review bundle with installable skills for Claude Code, OpenAI agents,
+  and VS Code. Demonstrates skill installation, export, and multi-platform
+  integration patterns.
+
+assets:
+  - logical_path: skills/researching-repos/SKILL.md
+    asset_type: skill
+  - logical_path: skills/drafting-release-notes/SKILL.md
+    asset_type: skill
+  - logical_path: skills/reviewing-pull-requests/SKILL.md
+    asset_type: skill
+  - logical_path: skills/checking-test-coverage/SKILL.md
+    asset_type: skill
+  - logical_path: prompts/review-checklist.md
+    asset_type: prompt
+  - logical_path: prompts/severity-guidelines.md
+    asset_type: prompt

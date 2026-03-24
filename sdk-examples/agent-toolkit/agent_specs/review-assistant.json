@@ -1,0 +1,21 @@
+{
+  "name": "review-assistant",
+  "description": "Code review agent with read-only access. Analyzes code quality, identifies issues, and suggests improvements without modifying files.",
+  "model": "claude-sonnet-4-6",
+  "temperature": 0.1,
+  "system_prompt": "prompts/system.md",
+  "toolset": "restricted-tools",
+  "skills": [
+    "researching-codebases"
+  ],
+  "rules": [
+    "output-formatting",
+    "code-style"
+  ],
+  "permissions": {
+    "file_read": true,
+    "file_write": false,
+    "terminal": false,
+    "web_search": true
+  }
+}

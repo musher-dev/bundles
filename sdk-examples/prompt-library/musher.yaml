@@ -1,0 +1,22 @@
+name: musher-examples/prompt-library
+version: 1.2.0
+description: >
+  Curated collection of prompts, toolsets, and agent specs for typed-access
+  SDK examples. Demonstrates bundle.prompt(), bundle.toolsets(), and
+  bundle.agent_specs() APIs, including PydanticAI integration patterns.
+
+assets:
+  - logical_path: prompts/system.md
+    asset_type: prompt
+  - logical_path: prompts/coding-guidelines.md
+    asset_type: prompt
+  - logical_path: prompts/documentation-standards.md
+    asset_type: prompt
+  - logical_path: toolsets/code-analysis-tools.json
+    asset_type: toolset
+  - logical_path: toolsets/documentation-tools.json
+    asset_type: toolset
+  - logical_path: agent_specs/coding-assistant.json
+    asset_type: agent_spec
+  - logical_path: agent_specs/documentation-agent.json
+    asset_type: agent_spec

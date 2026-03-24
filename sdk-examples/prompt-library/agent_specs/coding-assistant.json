@@ -1,0 +1,21 @@
+{
+  "name": "coding-assistant",
+  "description": "Software engineering assistant optimized for code generation, debugging, and refactoring tasks.",
+  "model": "claude-sonnet-4-6",
+  "temperature": 0.2,
+  "max_tokens": 4096,
+  "system_prompt": "prompts/system.md",
+  "toolset": "code-analysis-tools",
+  "capabilities": [
+    "code_generation",
+    "code_review",
+    "debugging",
+    "refactoring",
+    "test_writing"
+  ],
+  "context": {
+    "include_file_contents": true,
+    "include_git_diff": true,
+    "max_context_files": 20
+  }
+}

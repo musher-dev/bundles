@@ -1,0 +1,19 @@
+{
+  "default_model": "claude-sonnet-4-6",
+  "fallback_model": "claude-haiku-4-5",
+  "temperature": {
+    "code_generation": 0.2,
+    "code_review": 0.1,
+    "explanation": 0.4
+  },
+  "max_tokens": 4096,
+  "retry": {
+    "max_attempts": 3,
+    "backoff_seconds": [1, 2, 4]
+  },
+  "context": {
+    "max_file_lines": 2000,
+    "include_git_diff": true,
+    "include_test_output": true
+  }
+}
