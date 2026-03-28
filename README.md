@@ -4,20 +4,20 @@ Portable agent bundles for the [Musher](https://musher.dev) platform. Used in pl
 
 ## Bundles
 
-| Bundle | Domain | Purpose |
-|--------|--------|---------|
-| `agent-asset-authoring` | authoring | Templates for creating skills, hooks, rules, and other agent assets |
-| `api-route-governance` | governance | API endpoint design standards — naming, HTTP methods, versioning, errors |
-| `contract-enforcement-governance` | governance | Contract verification across the pipeline — breaking changes, conformance, CI gates |
-| `database-schema-governance` | governance | Database design standards — naming, data types, indexing, structural patterns |
-| `developer-docs-authoring` | authoring | Generate, maintain, and audit developer documentation |
-| `developer-environment-authoring` | authoring | Devcontainer configs, task runners, and workspace setup |
-| `marketing-site-authoring` | authoring | Multi-agent pipeline for marketing site content production |
-| `musher-bundle-scaffolding` | scaffolding | Scaffold new bundle directories with naming validation |
-| `openapi-specification-governance` | governance | OpenAPI specification standards and contract quality |
-| `product-profile-authoring` | authoring | Canonical product metadata, positioning, and roadmaps |
-| `project-shaping-orchestration` | orchestration | Problem framing, solution design, risk assessment, and scoping |
-| `repo-documentation-authoring` | authoring | Repository documentation files for discoverability and community health |
+| Bundle | Purpose |
+|--------|---------|
+| [`agent-asset-authoring`](agent-asset-authoring/) | Generate well-structured agent and skill files with portable-core architecture |
+| [`api-route-governance`](api-route-governance/) | Encode API design standards — naming, versioning, errors, and payload rules |
+| [`contract-enforcement-governance`](contract-enforcement-governance/) | Catch breaking changes, enforce conformance tests, and gate CI |
+| [`database-schema-governance`](database-schema-governance/) | Enforce PostgreSQL schema standards from naming through migration safety |
+| [`developer-docs-authoring`](developer-docs-authoring/) | Design, scaffold, and audit developer documentation end-to-end |
+| [`developer-environment-authoring`](developer-environment-authoring/) | Audit, scaffold, and maintain dev environment configs |
+| [`marketing-site-authoring`](marketing-site-authoring/) | Multi-stage content pipeline from brand strategy through design audit |
+| [`musher-bundle-scaffolding`](musher-bundle-scaffolding/) | Scaffold new bundle directories with validated naming |
+| [`openapi-specification-governance`](openapi-specification-governance/) | Keep OpenAPI specs consistent, complete, and SDK-generation-ready |
+| [`product-profile-authoring`](product-profile-authoring/) | Create canonical product profiles — metadata, positioning, roadmaps |
+| [`project-shaping-orchestration`](project-shaping-orchestration/) | Shape projects before committing to build — problem framing through scoping |
+| [`repo-documentation-authoring`](repo-documentation-authoring/) | Scaffold and maintain GitHub community health files |
 
 ## SDK Examples
 

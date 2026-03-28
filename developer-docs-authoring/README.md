@@ -1,40 +1,95 @@
 # Developer Docs Authoring
 
-Skills and agents for generating, maintaining, editing, and auditing developer user documentation.
+Design, scaffold, and audit developer documentation — from navigation architecture and page structure to content quality scoring and accessibility compliance. This bundle covers the full documentation lifecycle with specialized agents for structure, clarity, scaffolding, quality gating, LLM indexing, and site-wide architecture analysis.
 
-## Metadata
+## Quick Start
 
-- **Domain:** developer-docs
-- **Risk Level:** low
-- **Technologies:** None (vendor-agnostic)
-- **Aliases:** dev-docs, docs-authoring, developer-documentation
+Install via the [Mush CLI](https://github.com/musher-dev/mush):
 
-## Components
+```sh
+mush bundle install musher-dev/developer-docs-authoring
+```
+
+Then invoke from any compatible harness (Claude Code, Codex, OpenCode, Copilot, Gemini CLI):
+
+```
+Audit our developer docs site — check navigation, content quality, accessibility, and coverage gaps
+```
+
+## What's Inside
+
+The bundle ships six agents and fifteen skills that cover documentation design, generation, and quality assurance.
+
+The **docs-designer** agent is the primary workhorse — it audits and designs technical documentation for structure, clarity, user empathy, and Diataxis compliance. The **concept-designer** focuses specifically on terminology consistency and cognitive load, ensuring primitives are explained clearly and concepts build on each other.
+
+The **page-scaffolder** agent generates structurally correct pages from Diataxis-aligned archetypes (Quickstart, How-To, API Reference, Webhooks, Troubleshooting) with production-quality code displays. The **quality-reviewer** scores finished pages against a 5-dimension rubric (Findability, Accuracy, Clarity, Task Orientation, Readability) and issues pass/fail verdicts as a pre-publish gate.
+
+The **site-architect** agent analyzes the full documentation site for content coverage gaps, cross-section navigation coherence, sitemap completeness, orphan pages, and end-to-end user journey tracing. The **index-generator** produces machine-readable `llms.txt` and `llms-full.txt` files optimized for AI assistant consumption and RAG ingestion.
+
+Skills cover navigation systems (three-pane layouts, sidebar governance, breadcrumbs), taxonomy decisions, search/discovery UX, onboarding journey design, code display patterns, typography standards, accessibility compliance, versioning documentation, lifecycle governance, and benchmarking against industry leaders like Stripe, Vercel, and Kubernetes.
+
+## Usage Examples
+
+**Audit documentation quality**
+```
+Score our API reference pages against the editorial quality rubric — check findability, accuracy, clarity, and readability
+```
+The quality-reviewer produces dimension scores and a pass/fail verdict with specific remediation guidance.
+
+**Scaffold a new quickstart page**
+```
+Scaffold a quickstart page for our Python SDK with Diataxis-aligned structure and working code examples
+```
+The page-scaffolder generates a structurally correct page with proper anatomy for the quickstart archetype.
+
+**Find coverage gaps**
+```
+Analyze our docs site architecture — find orphan pages, coverage gaps, and broken navigation paths
+```
+The site-architect maps the full content graph and identifies structural issues.
+
+**Design the docs landing page**
+```
+Design the landing page for our developer docs — hero section, self-selection routing, getting-started block, and trust signals
+```
+Applies the 7-section landing page blueprint with hello-world visuals and persona-based routing.
+
+<details>
+<summary><strong>Components</strong></summary>
 
 ### Skills
-- **designing-landing-pages** — Docs landing page architecture: hero section, hello-world visual, self-selection routing, getting-started block, architecture overview, community/support, trust signals
-- **designing-navigation-systems** — Navigation architecture: three-pane layout, sidebar governance (20-item rule), breadcrumbs, contextual nav switching, Hick's Law, depth limits
-- **governing-taxonomy** — Taxonomy decisions: task-based vs topic-based, hybrid model, split/nest rules, content model metadata schema, controlled vocabulary
-- **auditing-docs-metrics** — Documentation KPIs: TTFS, search-to-click ratio, zero-result rate, bounce rate, deflection, usability testing (NASA-TLX)
-- **designing-search-discovery** — Search UX: federated search, scoped search, CMD+K pattern, synonym handling, zero-result recovery, search analytics feedback loop
-- **governing-docs-lifecycle** — Scaling governance: docs-as-code workflows, quarterly content audits, page lifecycle states, stale content detection, contributor onboarding
-- **analyzing-docs-benchmarks** — Benchmark analysis: Stripe/Vercel/K8s/AWS pattern extraction, innovation catalog, anti-pattern catalog, scorecard template
-- **scaffolding-page-archetypes** — Page archetype anatomy: Quickstart, How-To, API Reference, Webhooks, Troubleshooting structural templates with Diataxis alignment
-- **designing-code-displays** — Code block UX: syntax highlighting, copy buttons, language tab sync, interactive playgrounds, dynamic API key injection, CI-verified examples
-- **generating-llm-indexes** — Machine-readable docs: llms.txt architecture map, llms-full.txt content dump, AI assistant optimization, update cadence
-- **auditing-content-quality** — Editorial quality rubric: Findability, Accuracy, Clarity, Task Orientation, Readability scoring with pre-launch validation checklist
-- **designing-typography-layout** — Typography standards: line length 45-90 chars, leading 1.5x, baseline grid, whitespace density, heading hierarchy, density per page type
-- **auditing-accessibility-compliance** — WCAG AA evaluation for docs sites: keyboard navigation, screen reader compatibility, color contrast, ARIA attributes, skip navigation, focus management
-- **designing-onboarding-journeys** — Multi-page onboarding flow design: TTFS optimization, progressive complexity curves, persona-based path branching, milestone placement, page-type handoff patterns
-- **governing-version-migrations** — Version documentation governance: changelog formats, deprecation notice standards, migration guide anatomy, version selector UX, multi-version docs management
+
+| Skill | Purpose |
+|-------|---------|
+| `designing-landing-pages` | Docs landing page architecture — hero, self-selection, getting-started, trust signals |
+| `designing-navigation-systems` | Three-pane layout, sidebar governance, breadcrumbs, contextual nav switching |
+| `governing-taxonomy` | Task-based vs topic-based categorization, hybrid models, split/nest rules |
+| `auditing-docs-metrics` | KPIs — TTFS, search-to-click ratio, zero-result rate, bounce rate, usability testing |
+| `designing-search-discovery` | Federated search, CMD+K, synonym handling, zero-result recovery |
+| `governing-docs-lifecycle` | Docs-as-code workflows, quarterly audits, page lifecycle states, stale detection |
+| `analyzing-docs-benchmarks` | Benchmark against Stripe/Vercel/K8s/AWS with pattern extraction and scorecards |
+| `scaffolding-page-archetypes` | Diataxis-aligned structural templates — Quickstart, How-To, Reference, Webhooks, Troubleshooting |
+| `designing-code-displays` | Syntax highlighting, copy buttons, language tabs, interactive playgrounds, API key injection |
+| `generating-llm-indexes` | `llms.txt` / `llms-full.txt` generation for AI assistant consumption and RAG |
+| `auditing-content-quality` | 5-dimension editorial rubric with pre-launch validation checklist |
+| `designing-typography-layout` | Line length, leading, baseline grid, whitespace density, heading hierarchy |
+| `auditing-accessibility-compliance` | WCAG AA — keyboard navigation, screen readers, color contrast, ARIA, focus management |
+| `designing-onboarding-journeys` | Multi-page flows, progressive complexity, persona branching, TTFS optimization |
+| `governing-version-migrations` | Changelog formats, deprecation notices, migration guides, version selector UX |
 
 ### Agents
-- **docs-designer** — Audit and design technical documentation for structure, clarity, user empathy, and Diataxis compliance
-- **concept-designer** — Audit and improve concept clarity, terminology consistency, and cognitive load management
-- **page-scaffolder** — Generate structurally correct documentation pages from Diataxis-aligned archetypes with production-quality code displays
-- **quality-reviewer** — Score documentation pages against a 5-dimension editorial quality rubric and issue pre-publish pass/fail verdicts
-- **index-generator** — Generate site-wide machine-readable documentation indexes (llms.txt, llms-full.txt) for AI assistant consumption
-- **site-architect** — Analyze docs site architecture for content coverage gaps, cross-section navigation coherence, sitemap completeness, section balance, orphan page detection, and user journey tracing
 
-### Tools
-- None
+| Agent | Role |
+|-------|------|
+| `docs-designer` | Audits and designs documentation structure, clarity, and Diataxis compliance |
+| `concept-designer` | Improves concept clarity, terminology consistency, and cognitive load |
+| `page-scaffolder` | Generates structurally correct pages from Diataxis archetypes |
+| `quality-reviewer` | Scores pages against 5-dimension rubric, issues pre-publish pass/fail |
+| `index-generator` | Produces `llms.txt` / `llms-full.txt` machine-readable indexes |
+| `site-architect` | Analyzes site-wide coverage, navigation coherence, and user journeys |
+
+</details>
+
+---
+
+**Domain:** developer-docs · **Technologies:** Harness-agnostic · **Aliases:** dev-docs, docs-authoring, developer-documentation
