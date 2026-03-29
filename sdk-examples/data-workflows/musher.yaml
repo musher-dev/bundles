@@ -1,0 +1,10 @@
+name: musher-examples/data-workflows
+version: 1.0.0
+description: >
+  Data analysis bundle with skills for CSV file exploration, aggregation,
+  and summarization. Designed as the primary bundle for the OpenAI hosted
+  container skill example.
+
+assets:
+  - logical_path: skills/csv-insights/SKILL.md
+    asset_type: skill
