@@ -10,6 +10,7 @@ These are **Musher registry bundles** (structured with `musher.yaml` and asset f
 |-----------|--------------|---------|---------|--------------|
 | `agent-toolkit/` | `musher-examples/agent-toolkit` | 2.0.0 | Showcase all asset types for enumeration and inspection | Python: `pull_bundle`, `inspect_manifest` |
 | `code-review-kit/` | `musher-examples/code-review-kit` | 1.2.0 | Installable skills for Claude, OpenAI, and VS Code integration | TypeScript: `pull-bundle`, `resolve-bundle`, `install-project-skills`, `install-vscode-skills`; Python: `install_project_skills`, `export_plugin`, OpenAI examples |
+| `data-workflows/` | `musher-examples/data-workflows` | 1.0.0 | CSV data analysis and summarization in hosted containers | Python: OpenAI `hosted_inline_skill` |
 | `prompt-library/` | `musher-examples/prompt-library` | 1.2.0 | Typed resource access (prompts, toolsets, agent specs) | Python: `bundle_resources`, PydanticAI `instructions_from_bundle`, `dynamic_instructions` |
 
 ## Structure
