@@ -4,10 +4,10 @@ Catch breaking changes, enforce conformance tests, and gate CI before bad contra
 
 ## Quick Start
 
-Install via the [Mush CLI](https://github.com/musher-dev/mush):
+Install via the [Musher CLI](https://github.com/musher-dev/musher-cli):
 
 ```sh
-mush bundle install musher-dev/contract-enforcement-governance
+musher bundle install musher-dev/contract-enforcement-governance
 ```
 
 Then invoke from any compatible harness (Claude Code, Codex, OpenCode, Copilot, Gemini CLI):

@@ -4,10 +4,10 @@ Generate well-structured agent and skill files with portable-core architecture a
 
 ## Quick Start
 
-Install via the [Mush CLI](https://github.com/musher-dev/mush):
+Install via the [Musher CLI](https://github.com/musher-dev/musher-cli):
 
 ```sh
-mush bundle install musher-dev/agent-asset-authoring
+musher bundle install musher-dev/agent-asset-authoring
 ```
 
 Then invoke from any compatible harness (Claude Code, Codex, OpenCode, Copilot, Gemini CLI):

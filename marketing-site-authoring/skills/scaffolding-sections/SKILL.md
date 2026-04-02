@@ -282,7 +282,7 @@ Each IA section specifies a trust mechanic. Integrate them as follows:
 | 1: Hero | Integration logos | Logo pills row below terminal: "Works with Claude Code, Codex, OpenCode" |
 | 2: Social Proof Bar | Metric + logos + badge | Metric-value/label pairs + logo pills + badge pills |
 | 3: Mechanism | Architecture proof | The code blocks themselves are the proof -- show real YAML and CLI output |
-| 4: Value Grid | Per-card micro-proof | Inline `code` references within card descriptions (e.g., `mush bundle apply`) |
+| 4: Value Grid | Per-card micro-proof | Inline `code` references within card descriptions (e.g., `musher bundle apply`) |
 | 5: Proof Block | Founder credential + metrics | Credential paragraph + metric-showcase grid |
 | 6: Community | GitHub + Discord links | Link buttons (inspect the repo yourself) |
 | 7: CTA | Friction reducers | Badge pills below install command |
