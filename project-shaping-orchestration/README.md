@@ -4,10 +4,10 @@ Shape projects before committing to build. This bundle orchestrates a multi-agen
 
 ## Quick Start
 
-Install via the [Mush CLI](https://github.com/musher-dev/mush):
+Install via the [Musher CLI](https://github.com/musher-dev/musher-cli):
 
 ```sh
-mush bundle install musher-dev/project-shaping-orchestration
+musher bundle install musher-dev/project-shaping-orchestration
 ```
 
 Then invoke from any compatible harness (Claude Code, Codex, OpenCode, Copilot, Gemini CLI):

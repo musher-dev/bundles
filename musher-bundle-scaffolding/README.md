@@ -4,10 +4,10 @@ Scaffold new bundle directories with validated naming and standard structure. Th
 
 ## Quick Start
 
-Install via the [Mush CLI](https://github.com/musher-dev/mush):
+Install via the [Musher CLI](https://github.com/musher-dev/musher-cli):
 
 ```sh
-mush bundle install musher-dev/musher-bundle-scaffolding
+musher bundle install musher-dev/musher-bundle-scaffolding
 ```
 
 Then invoke from any compatible harness (Claude Code, Codex, OpenCode, Copilot, Gemini CLI):

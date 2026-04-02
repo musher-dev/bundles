@@ -31,7 +31,7 @@ Single code block with language label and copy button. Already implemented as `C
 
 Side-by-side or stacked panels: config on left, CLI output on right.
 
-**Use for**: Mechanism section showing bundle YAML + `mush bundle apply` output, pipeline YAML + `mush pipeline run` output.
+**Use for**: Mechanism section showing bundle YAML + `musher bundle apply` output, pipeline YAML + `musher pipeline run` output.
 
 ### 3. Tabbed Multi-File View
 
@@ -304,12 +304,12 @@ rules:
 
 **Right panel** (CLI output):
 ```
-$ mush bundle apply --repo my-org/api
+$ musher bundle apply --repo my-org/api
 Applying bundle 'code-review' to my-org/api...
   Agent: claude-code
   Rules: 2 applied
   Tools: 3 allowed
-  Done. Agent config written to .mush/bundles/code-review.yaml
+  Done. Agent config written to .musher/bundles/code-review.yaml
 ```
 
 ### Pipeline Code Block
@@ -328,7 +328,7 @@ job:
 
 **Right panel** (CLI output):
 ```
-$ mush pipeline run --event pr-opened-42
+$ musher pipeline run --event pr-opened-42
 Event received: pull_request.opened #42
 Dispatching job: code-review
   Attempt 1/3... running

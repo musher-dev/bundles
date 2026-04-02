@@ -29,10 +29,10 @@ Each bundle contains a `README.md` and may include `skills/`, `agents/`, `refere
 
 ## Usage
 
-**From the Hub** — install bundles with the [Mush CLI](https://github.com/musher-dev/mush):
+**From the Hub** — install bundles with the [Musher CLI](https://github.com/musher-dev/musher-cli):
 
 ```sh
-mush bundle install namespace/slug
+musher bundle install namespace/slug
 ```
 
 **Local development** — clone the repo and load bundles into your harness workspace.
@@ -43,8 +43,7 @@ mush bundle install namespace/slug
 |----------|-------------|
 | [Hub](https://hub.musher.dev) | Browse and discover published bundles |
 | [Docs](https://docs.musher.dev) | Platform documentation |
-| [Mush CLI](https://github.com/musher-dev/mush) | Install and run bundles locally |
-| [Musher CLI](https://github.com/musher-dev/musher-cli) | Create, validate, and publish bundles |
+| [Musher CLI](https://github.com/musher-dev/musher-cli) | Install, run, create, validate, and publish bundles |
 | [TypeScript SDK](https://github.com/musher-dev/typescript-sdk) | Programmatic bundle access for Node.js |
 | [Python SDK](https://github.com/musher-dev/python-sdk) | Programmatic bundle access for Python |
 | [Specs](https://github.com/musher-dev/specs) | Canonical JSON schemas for the bundle format |

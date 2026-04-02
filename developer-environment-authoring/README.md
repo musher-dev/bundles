@@ -4,10 +4,10 @@ Audit, scaffold, and maintain dev environment configs — devcontainers, task ru
 
 ## Quick Start
 
-Install via the [Mush CLI](https://github.com/musher-dev/mush):
+Install via the [Musher CLI](https://github.com/musher-dev/musher-cli):
 
 ```sh
-mush bundle install musher-dev/developer-environment-authoring
+musher bundle install musher-dev/developer-environment-authoring
 ```
 
 Then invoke from any compatible harness (Claude Code, Codex, OpenCode, Copilot, Gemini CLI):
