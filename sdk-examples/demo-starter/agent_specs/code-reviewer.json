@@ -1,0 +1,15 @@
+{
+  "name": "code-reviewer",
+  "description": "Review code for quality, correctness, security, and best-practice adherence.",
+  "model": "claude-sonnet-4-6",
+  "temperature": 0.2,
+  "skills": [
+    "summarizing-changes"
+  ],
+  "permissions": {
+    "file_read": true,
+    "file_write": false,
+    "terminal": false,
+    "web_search": false
+  }
+}

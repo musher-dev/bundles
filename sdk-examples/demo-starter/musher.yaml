@@ -1,0 +1,13 @@
+name: musher-dev/demo-starter
+version: 1.0.0
+description: >
+  A demonstration bundle showcasing the Musher platform with practical skills
+  and agents for everyday development workflows.
+
+assets:
+  - logical_path: skills/summarizing-changes/SKILL.md
+    asset_type: skill
+  - logical_path: skills/writing-commit-messages/SKILL.md
+    asset_type: skill
+  - logical_path: agent_specs/code-reviewer.json
+    asset_type: agent_spec
